@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <title>Payment Confirmation</title>
+
+    <style>
+        .body {
+            height: 89vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins", system-ui;
+            padding: 20px;
+        }
+
+        .container {
+            background: #111827;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 1.25rem;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            line-height: 2rem;
+            margin-bottom: 1rem;
+            margin-top: 0;
+        }
+
+        .message {
+            font-weight: 600;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .link-area {
+            margin-top: 2.5rem;
+        }
+
+        .link-area a {
+            display: inline-block;
+            background: #fca5a5;
+            color: #111827;
+            font-weight: 500;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            line-height: 1.25rem;
+            padding: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 2rem;
+                width: 50%;
+            }
+
+            .title {
+                font-size: 2.25rem;
+                line-height: 2.5rem;
+            }
+
+            .message {
+                font-size: 1.125rem;
+                line-height: 1.75rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                width: 40%;
+            }
+        }
+    </style>
+</head>
+
+<body class="body">
+    <div class="container">
+        <h1 class="title">{{message-title}}</h1>
+        <p class="message">{{message}}</p>
+        <div class="link-area">
+            <a href="{{home-url}}">Back to home</a>
+        </div>
+    </div>
+</body>
+
+</html>
