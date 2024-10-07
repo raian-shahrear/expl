@@ -29,18 +29,28 @@ router.patch(
   UserControllers.updateUserRole,
 );
 router.get('/users', auth('admin', 'user'), UserControllers.getAllUsers);
-
 router.post(
   '/change-password',
   auth('admin', 'user'),
   validateRequest(UserValidation.changePasswordValidationSchema),
   UserControllers.changePassword,
 );
-
 router.post(
   '/refresh-token',
   validateRequest(UserValidation.refreshTokenValidationSchema),
   UserControllers.refreshToken,
+);
+router.patch(
+  '/follow',
+  auth('admin', 'user'),
+  validateRequest(UserValidation.updateFollowValidationSchema),
+  UserControllers.followUser,
+);
+router.patch(
+  '/unfollow',
+  auth('admin', 'user'),
+  validateRequest(UserValidation.updateFollowValidationSchema),
+  UserControllers.unfollowUser,
 );
 
 export const UserRoutes = router;

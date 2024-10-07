@@ -47,7 +47,9 @@ const loginUser = async (payload: TLoginUser) => {
     userProfile: isUserExist.profile,
     userPhone: isUserExist.phone,
     userAddress: isUserExist.address,
-    needPassChange: isUserExist.needPassChange,
+    following: isUserExist.following,
+    follower: isUserExist.follower,
+    isVerified: isUserExist.isVerified,
   };
   const accessToken = crateToken(
     jwtPayload,
@@ -209,6 +211,82 @@ const refreshToken = async (token: string) => {
   return { accessToken };
 };
 
+// follow user
+const followUserIntoDB = async (
+  user: Record<string, unknown>,
+  payload: {
+    followingUserId: string;
+  },
+) => {
+    // is user exist
+  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
+  if (!loggedInUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+  }
+  const followingUser = await UserModel.findById(payload?.followingUserId);
+  if (!followingUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user does not exist!');
+  }
+  // Check if already following
+  const isAlreadyFollowing = loggedInUser.following?.some(
+    (follow) => follow.userId.toString() === payload?.followingUserId
+  );
+  if (isAlreadyFollowing) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'You are already following this user!');
+  }
+
+  const myProfileUpdate = await UserModel.findByIdAndUpdate(
+    loggedInUser._id,
+    { $push: { following: { userId: payload?.followingUserId } } },
+    { new: true }
+  );
+  const myFollowingProfileUpdate = await UserModel.findByIdAndUpdate(
+    payload?.followingUserId,
+    { $push: { follower: { userId: loggedInUser._id.toString() } } },
+    { new: true }
+  );
+
+  return myProfileUpdate;
+};
+
+// unfollow user
+const unfollowUserIntoDB = async (
+  user: Record<string, unknown>,
+  payload: {
+    followingUserId: string;
+  },
+) => {
+    // is user exist
+  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
+  if (!loggedInUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+  }
+  const followingUser = await UserModel.findById(payload?.followingUserId);
+  if (!followingUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user does not exist!');
+  }
+  // Check if already following
+  const isAlreadyFollowing = loggedInUser.following?.some(
+    (follow) => follow.userId.toString() === payload?.followingUserId
+  );
+  if (!isAlreadyFollowing) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'You are not following this user yet!');
+  }
+
+  const myProfileUpdate = await UserModel.findByIdAndUpdate(
+    loggedInUser._id,
+    { $pull: { following: { userId: payload?.followingUserId } } },
+    { new: true }
+  );
+  const myFollowingProfileUpdate = await UserModel.findByIdAndUpdate(
+    payload?.followingUserId,
+    { $pull: { follower: { userId: loggedInUser._id.toString() } } },
+    { new: true }
+  );
+
+  return myProfileUpdate;
+};
+
 export const UserServices = {
   registerUserIntoDB,
   updateUserIntoDB,
@@ -217,4 +295,6 @@ export const UserServices = {
   getAllUsersFromDB,
   changePasswordIntoDB,
   refreshToken,
+  followUserIntoDB,
+  unfollowUserIntoDB,
 };

@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 
 import { model, Schema } from 'mongoose';
-import { TUser } from './users.interface';
+import { TFollowing, TUser } from './users.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+
+const followingSchema = new Schema<TFollowing>({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+});
 
 const userSchema = new Schema<TUser>(
   {
@@ -39,6 +47,18 @@ const userSchema = new Schema<TUser>(
     profile: {
       type: String,
       required: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    following: {
+      type: [followingSchema],
+      default: [],
+    },
+    follower: {
+      type: [followingSchema],
+      default: [],
     },
     needPassChange: {
       type: Boolean,

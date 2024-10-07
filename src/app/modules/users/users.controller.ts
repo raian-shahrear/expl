@@ -113,6 +113,32 @@ const refreshToken = catchAsync(async (req, res) => {
   });
 });
 
+// follow user
+const followUser = catchAsync(async (req, res) => {
+  const result = await UserServices.followUserIntoDB(req.user, req.body);
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User followed successfully!',
+    data: result,
+  });
+});
+
+// unfollow user
+const unfollowUser = catchAsync(async (req, res) => {
+  const result = await UserServices.unfollowUserIntoDB(req.user, req.body);
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User followed successfully!',
+    data: result,
+  });
+});
+
 export const UserControllers = {
   registerUser,
   updateUser,
@@ -121,4 +147,6 @@ export const UserControllers = {
   getAllUsers,
   changePassword,
   refreshToken,
+  followUser,
+  unfollowUser
 };

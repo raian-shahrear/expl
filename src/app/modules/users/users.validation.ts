@@ -7,8 +7,7 @@ const createUserValidationSchema = z.object({
     password: z
       .string({ invalid_type_error: 'Password must be a string' })
       .max(18, { message: "Password can't be more than 18 characters" })
-      .min(6, { message: 'Password must be at least 6 characters' })
-      .optional(),
+      .min(6, { message: 'Password must be at least 6 characters' }),
     phone: z.string(),
     address: z.string(),
     profile: z.string(),
@@ -21,7 +20,14 @@ const updateUserValidationSchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     profile: z.string().optional(),
-    needPassChange: z.string().optional(),
+    isVerified: z.boolean().optional(),
+    needPassChange: z.boolean().optional(),
+  }),
+});
+
+const updateFollowValidationSchema = z.object({
+  body: z.object({
+    followingUserId: z.string(),
   }),
 });
 
@@ -58,4 +64,5 @@ export const UserValidation = {
   loginValidationSchema,
   changePasswordValidationSchema,
   refreshTokenValidationSchema,
+  updateFollowValidationSchema,
 };
