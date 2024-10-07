@@ -7,6 +7,7 @@ import { crateToken } from './users.util';
 import config from '../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 // register user
 const registerUserIntoDB = async (payload: TUser) => {
@@ -109,7 +110,14 @@ const updateUserRoleIntoDB = async (id: string, payload: Partial<TUser>) => {
 
 // get all user
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
-  const userQuery = new QueryBuilder(UserModel.find(), query).sort().paginate();
+  const userQuery = new QueryBuilder(
+    UserModel.find()
+      .populate({ path: 'following.user' })
+      .populate({ path: 'follower.user' }),
+    query,
+  )
+    .sort()
+    .paginate();
   const result = await userQuery.queryModel;
   const meta = await userQuery.countTotal();
 
@@ -125,7 +133,9 @@ const changePasswordIntoDB = async (
   payload: { oldPassword: string; newPassword: string },
 ) => {
   // checking user is exist or not by userId
-  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
+  const loggedInUser = await UserModel.findOne({
+    email: user.userEmail,
+  }).select('+password');
   if (!loggedInUser) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
   }
@@ -134,6 +144,7 @@ const changePasswordIntoDB = async (
     payload?.oldPassword,
     loggedInUser.password,
   );
+
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.FORBIDDEN, 'Password does not matched!');
   }
@@ -151,7 +162,7 @@ const changePasswordIntoDB = async (
     },
     {
       password: hashedNewPassword,
-      needsPassChange: false,
+      needPassChange: false,
       passwordChangedAt: new Date(),
     },
   );
@@ -218,7 +229,7 @@ const followUserIntoDB = async (
     followingUserId: string;
   },
 ) => {
-    // is user exist
+  // is user exist
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
@@ -229,24 +240,46 @@ const followUserIntoDB = async (
   }
   // Check if already following
   const isAlreadyFollowing = loggedInUser.following?.some(
-    (follow) => follow.userId.toString() === payload?.followingUserId
+    (follow) => follow.user.toString() === payload?.followingUserId,
   );
   if (isAlreadyFollowing) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'You are already following this user!');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'You are already following this user!',
+    );
   }
 
-  const myProfileUpdate = await UserModel.findByIdAndUpdate(
-    loggedInUser._id,
-    { $push: { following: { userId: payload?.followingUserId } } },
-    { new: true }
-  );
-  const myFollowingProfileUpdate = await UserModel.findByIdAndUpdate(
-    payload?.followingUserId,
-    { $push: { follower: { userId: loggedInUser._id.toString() } } },
-    { new: true }
-  );
+  // create a session
+  const session = await mongoose.startSession();
+  try {
+    // start session
+    session.startTransaction();
+    const myProfileUpdate = await UserModel.findByIdAndUpdate(
+      loggedInUser._id,
+      { $push: { following: { user: payload?.followingUserId } } },
+      { new: true, session },
+    );
+    if (!myProfileUpdate) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update following!');
+    }
 
-  return myProfileUpdate;
+    const myFollowingProfileUpdate = await UserModel.findByIdAndUpdate(
+      payload?.followingUserId,
+      { $push: { follower: { user: loggedInUser._id.toString() } } },
+      { new: true, session },
+    );
+    if (!myFollowingProfileUpdate) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update following!');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+    return myProfileUpdate;
+  } catch (err) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, `error: ${err}`);
+  }
 };
 
 // unfollow user
@@ -256,7 +289,7 @@ const unfollowUserIntoDB = async (
     followingUserId: string;
   },
 ) => {
-    // is user exist
+  // is user exist
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
@@ -267,24 +300,46 @@ const unfollowUserIntoDB = async (
   }
   // Check if already following
   const isAlreadyFollowing = loggedInUser.following?.some(
-    (follow) => follow.userId.toString() === payload?.followingUserId
+    (follow) => follow.user.toString() === payload?.followingUserId,
   );
   if (!isAlreadyFollowing) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'You are not following this user yet!');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'You are not following this user yet!',
+    );
   }
 
-  const myProfileUpdate = await UserModel.findByIdAndUpdate(
-    loggedInUser._id,
-    { $pull: { following: { userId: payload?.followingUserId } } },
-    { new: true }
-  );
-  const myFollowingProfileUpdate = await UserModel.findByIdAndUpdate(
-    payload?.followingUserId,
-    { $pull: { follower: { userId: loggedInUser._id.toString() } } },
-    { new: true }
-  );
+  // create a session
+  const session = await mongoose.startSession();
+  try {
+    // start session
+    session.startTransaction();
+    const myProfileUpdate = await UserModel.findByIdAndUpdate(
+      loggedInUser._id,
+      { $pull: { following: { user: payload?.followingUserId } } },
+      { new: true, session },
+    );
+    if (!myProfileUpdate) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update following!');
+    }
 
-  return myProfileUpdate;
+    const myFollowingProfileUpdate = await UserModel.findByIdAndUpdate(
+      payload?.followingUserId,
+      { $pull: { follower: { user: loggedInUser._id.toString() } } },
+      { new: true, session },
+    );
+    if (!myFollowingProfileUpdate) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update following!');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+    return myProfileUpdate;
+  } catch (err) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, `error: ${err}`);
+  }
 };
 
 export const UserServices = {

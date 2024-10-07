@@ -21,7 +21,6 @@ const updateUserValidationSchema = z.object({
     address: z.string().optional(),
     profile: z.string().optional(),
     isVerified: z.boolean().optional(),
-    needPassChange: z.boolean().optional(),
   }),
 });
 

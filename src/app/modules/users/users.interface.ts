@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export type TFollowing = {
-    userId: Types.ObjectId;
+    user: Types.ObjectId;
 }
 
 export type TUser = {

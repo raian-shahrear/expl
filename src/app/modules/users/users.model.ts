@@ -6,12 +6,12 @@ import bcrypt from 'bcrypt';
 import config from '../../config';
 
 const followingSchema = new Schema<TFollowing>({
-  userId: {
+  user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
-});
+}, {_id: false});
 
 const userSchema = new Schema<TUser>(
   {

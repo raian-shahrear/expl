@@ -89,8 +89,7 @@ const getAllUsers = catchAsync(async (req, res) => {
 // change password
 const changePassword = catchAsync(async (req, res) => {
   const user = req.user;
-  const { ...passwordData } = req.body;
-  const result = await UserServices.changePasswordIntoDB(user, passwordData);
+  const result = await UserServices.changePasswordIntoDB(user, req.body);
 
   // send response
   sendResponse(res, {
