@@ -110,7 +110,7 @@ const updateUserRoleIntoDB = async (id: string, payload: Partial<TUser>) => {
 
 // get all user
 const getAllUsersFromDB = async (query: Record<string, unknown>) => {
-  const userQuery = new QueryBuilder(
+  const getQuery = new QueryBuilder(
     UserModel.find()
       .populate({ path: 'following.user' })
       .populate({ path: 'follower.user' }),
@@ -118,8 +118,8 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   )
     .sort()
     .paginate();
-  const result = await userQuery.queryModel;
-  const meta = await userQuery.countTotal();
+  const result = await getQuery.queryModel;
+  const meta = await getQuery.countTotal();
 
   return {
     meta,
@@ -137,7 +137,7 @@ const changePasswordIntoDB = async (
     email: user.userEmail,
   }).select('+password');
   if (!loggedInUser) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
   // checking password matched or not
   const isPasswordMatched = await bcrypt.compare(
@@ -232,7 +232,7 @@ const followUserIntoDB = async (
   // is user exist
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
   const followingUser = await UserModel.findById(payload?.followingUserId);
   if (!followingUser) {
@@ -292,7 +292,7 @@ const unfollowUserIntoDB = async (
   // is user exist
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found!');
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
   const followingUser = await UserModel.findById(payload?.followingUserId);
   if (!followingUser) {

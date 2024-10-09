@@ -35,7 +35,7 @@ const getAllComments = catchAsync(async (req, res) => {
 // update comment
 const updateComment = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await CommentServices.updateCommentIntoDB(id, req.body);
+  const result = await CommentServices.updateCommentIntoDB(id, req.body, req.user);
 
   // send response
   sendResponse(res, {
@@ -49,13 +49,13 @@ const updateComment = catchAsync(async (req, res) => {
 // delete comment
 const deleteComment = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await CommentServices.deleteCommentFromDB(id);
+  const result = await CommentServices.deleteCommentFromDB(id, req.user);
 
   // send response
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Comment is updated successfully!',
+    message: 'Comment is deleted successfully!',
     data: result,
   });
 });

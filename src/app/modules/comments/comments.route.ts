@@ -9,14 +9,14 @@ const router = express.Router();
 
 router.post(
   '/',
-  auth('admin', 'user'),
+  auth('user'),
   validateRequest(CommentValidation.createCommentValidationSchema),
   CommentControllers.createComment,
 );
-router.get('/:postId', CommentControllers.getAllComments);
+router.get('/:postId', auth('admin','user'), CommentControllers.getAllComments);
 router.patch(
   '/:id',
-  auth('admin', 'user'),
+  auth('user'),
   validateRequest(CommentValidation.updateCommentValidationSchema),
   CommentControllers.updateComment,
 );
