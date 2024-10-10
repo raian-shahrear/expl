@@ -27,33 +27,30 @@ class QueryBuilder<T> {
   }
 
   // filter query
-//   filter() {
-//     const queryObj = { ...this.query };
+  filter() {
+    const queryObj = { ...this.query };
 
-//     const excludingFields = ['searchTerm', 'sort', 'limit', 'page'];
-//     excludingFields.forEach((elm) => delete queryObj[elm]);
+    const excludingFields = ['searchTerm', 'sort', 'limit', 'page'];
+    excludingFields.forEach((elm) => delete queryObj[elm]);
 
-//     if (queryObj.minPrice || queryObj.maxPrice) {
-//       const priceFilter: { $gte?: number; $lte?: number } = {};
-//       if (queryObj.minPrice) priceFilter.$gte = Number(queryObj.minPrice);
-//       if (queryObj.maxPrice) priceFilter.$lte = Number(queryObj.maxPrice);
-//       queryObj.price = priceFilter;
-//       delete queryObj.minPrice;
-//       delete queryObj.maxPrice;
-//     }
-//     if (queryObj.services) {
-//       const servicesArray = (queryObj.services as string)
-//         .split(',')
-//         .map((id) => id.trim());
-//       queryObj._id = {
-//         $in: servicesArray.map((id) => new mongoose.Types.ObjectId(id)),
-//       };
-//       delete queryObj.services;
-//     }
+    if (queryObj.categories) {
+      const categoriesArray = (queryObj.categories as string)
+        .split(',')
+        .map((id) => id.trim());
+      queryObj.category = { $in: categoriesArray };
+      delete queryObj.categories;
+    }
+    if (queryObj.authors) {
+      const authorsArray = (queryObj.authors as string)
+        .split(',')
+        .map((id) => id.trim());
+      queryObj.author = { $in: authorsArray };
+      delete queryObj.authors;
+    }
 
-//     this.queryModel = this.queryModel.find(queryObj as FilterQuery<T>);
-//     return this;
-//   }
+    this.queryModel = this.queryModel.find(queryObj as FilterQuery<T>);
+    return this;
+  }
 
   // sort query
   sort() {

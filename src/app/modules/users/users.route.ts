@@ -42,13 +42,13 @@ router.post(
 );
 router.patch(
   '/follow',
-  auth('admin', 'user'),
+  auth('user'),
   validateRequest(UserValidation.updateFollowValidationSchema),
   UserControllers.followUser,
 );
 router.patch(
   '/unfollow',
-  auth('admin', 'user'),
+  auth('user'),
   validateRequest(UserValidation.updateFollowValidationSchema),
   UserControllers.unfollowUser,
 );

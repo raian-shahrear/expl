@@ -5,7 +5,6 @@ const createPostValidationSchema = z.object({
     title: z.string(),
     image: z.array(z.string()),
     category: z.string(),
-    author: z.string(),
     travelStory: z.string(),
     premium: z
       .object({

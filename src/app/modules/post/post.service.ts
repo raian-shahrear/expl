@@ -106,7 +106,6 @@ const deletePostFromDB = async (id: string, user: Record<string, unknown>) => {
     }
 
     const commentsExist = await CommentModel.exists({ post: id });
-    console.log(commentsExist);
     if (commentsExist) {
       // If comments exist, delete them
       const deleteComments = await CommentModel.deleteMany(
@@ -152,9 +151,10 @@ const upvotePostIntoDB = async (id: string, user: Record<string, unknown>) => {
 
     // Check if user has already upvoted the post
     const hasUpvoted = isPostExist?.upvote?.includes(userId);
+    let updatePost;
     if (!hasUpvoted) {
       // Add user to upvote array
-      await PostModel.findByIdAndUpdate(
+      updatePost = await PostModel.findByIdAndUpdate(
         id,
         { $push: { upvote: userId } },
         { new: true, session },
@@ -168,12 +168,17 @@ const upvotePostIntoDB = async (id: string, user: Record<string, unknown>) => {
           { new: true, session },
         );
       }
+    } else {
+      updatePost = await PostModel.findByIdAndUpdate(
+        id,
+        { $pull: { upvote: userId } },
+        { new: true, session },
+      );
     }
-    const updatedPost = await PostModel.findById(id);
 
     await session.commitTransaction();
     await session.endSession();
-    return updatedPost;
+    return updatePost;
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
@@ -205,9 +210,10 @@ const downvotePostIntoDB = async (
 
     // Check if user has already downvoted the post
     const hasDownvoted = isPostExist?.downvote?.includes(userId);
+    let updatePost;
     if (!hasDownvoted) {
       // Add user to downvote array
-      await PostModel.findByIdAndUpdate(
+      updatePost = await PostModel.findByIdAndUpdate(
         id,
         { $push: { downvote: userId } },
         { new: true, session },
@@ -221,12 +227,17 @@ const downvotePostIntoDB = async (
           { new: true, session },
         );
       }
+    } else {
+      updatePost = await PostModel.findByIdAndUpdate(
+        id,
+        { $pull: { downvote: userId } },
+        { new: true, session },
+      );
     }
-    const updatedPost = await PostModel.findById(id);
 
     await session.commitTransaction();
     await session.endSession();
-    return updatedPost;
+    return updatePost;
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
