@@ -12,7 +12,7 @@ export type TUser = {
   role: 'admin' | 'user';
   address: string;
   profile: string;
-  isVerified?: boolean;
+  isVerified?: 'no' | 'pending' | 'verified';
   following?: TFollowing[];
   follower?: TFollowing[];
   needPassChange?: boolean;

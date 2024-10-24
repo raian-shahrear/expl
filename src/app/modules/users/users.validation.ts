@@ -6,7 +6,6 @@ const createUserValidationSchema = z.object({
     email: z.string().email(),
     password: z
       .string({ invalid_type_error: 'Password must be a string' })
-      .max(18, { message: "Password can't be more than 18 characters" })
       .min(6, { message: 'Password must be at least 6 characters' }),
     phone: z.string(),
     address: z.string(),
@@ -20,7 +19,7 @@ const updateUserValidationSchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     profile: z.string().optional(),
-    isVerified: z.boolean().optional(),
+    isVerified: z.string().optional(),
   }),
 });
 

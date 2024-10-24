@@ -53,6 +53,20 @@ const getAllPostByUser = catchAsync(async (req, res) => {
     });
 });
 
+// get single post
+const getSinglePost = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await PostServices.getSinglePostFromDB(id);
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Post is retrieved successfully!',
+    data: result,
+  });
+});
+
 // update post
 const updatePost = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -113,6 +127,7 @@ export const PostControllers = {
   createPost,
   getAllPost,
   getAllPostByUser,
+  getSinglePost,
   updatePost,
   deletePost,
   upvotePost,

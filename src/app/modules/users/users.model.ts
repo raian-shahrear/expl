@@ -49,8 +49,9 @@ const userSchema = new Schema<TUser>(
       required: true,
     },
     isVerified: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ['no', 'pending', 'verified'],
+      default: 'no',
     },
     following: {
       type: [followingSchema],

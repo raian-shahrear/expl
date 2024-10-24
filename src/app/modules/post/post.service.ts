@@ -14,7 +14,7 @@ const createPostIntoB = async (
 ) => {
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized user!');
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
 
   payload.author = loggedInUser?._id;
@@ -31,6 +31,8 @@ const getAllPostFromDB = async (query: Record<string, unknown>) => {
     query,
   )
     .sort()
+    .search(['title', 'travelStory'])
+    .filter()
     .paginate();
   const result = await getQuery.queryModel;
   const meta = await getQuery.countTotal();
@@ -61,6 +63,12 @@ const getAllPostByUserFromDB = async (
     meta,
     result,
   };
+};
+
+// get single post
+const getSinglePostFromDB = async (id: string) => {
+  const result = await PostModel.findById(id);
+  return result;
 };
 
 // update post
@@ -176,6 +184,27 @@ const upvotePostIntoDB = async (id: string, user: Record<string, unknown>) => {
       );
     }
 
+    // update user verification status
+    const postAuthor = await UserModel.findById(isPostExist?.author);
+    if (updatePost && postAuthor) {
+      if (updatePost!.upvote!.length > 0 && postAuthor.isVerified === 'no') {
+        await UserModel.findByIdAndUpdate(
+          postAuthor._id,
+          { isVerified: 'pending' },
+          { new: true, session },
+        );
+      } else if (
+        postAuthor.isVerified === 'pending' &&
+        updatePost!.upvote!.length === 0
+      ) {
+        await UserModel.findByIdAndUpdate(
+          postAuthor._id,
+          { isVerified: 'no' },
+          { new: true, session },
+        );
+      }
+    }
+
     await session.commitTransaction();
     await session.endSession();
     return updatePost;
@@ -213,7 +242,7 @@ const downvotePostIntoDB = async (
     let updatePost;
     if (!hasDownvoted) {
       // Add user to downvote array
-      updatePost = await PostModel.findByIdAndUpdate(
+      await PostModel.findByIdAndUpdate(
         id,
         { $push: { downvote: userId } },
         { new: true, session },
@@ -221,18 +250,33 @@ const downvotePostIntoDB = async (
 
       // Remove user from upvote array
       if (isPostExist?.upvote?.includes(userId)) {
-        await PostModel.findByIdAndUpdate(
+        updatePost = await PostModel.findByIdAndUpdate(
           id,
           { $pull: { upvote: userId } },
           { new: true, session },
         );
       }
     } else {
-      updatePost = await PostModel.findByIdAndUpdate(
+      await PostModel.findByIdAndUpdate(
         id,
         { $pull: { downvote: userId } },
         { new: true, session },
       );
+    }
+
+    // update user verification status
+    const postAuthor = await UserModel.findById(isPostExist?.author);
+    if (updatePost && postAuthor) {
+      if (
+        postAuthor.isVerified === 'pending' &&
+        updatePost!.upvote!.length === 0
+      ) {
+        await UserModel.findByIdAndUpdate(
+          postAuthor._id,
+          { isVerified: 'no' },
+          { new: true, session },
+        );
+      }
     }
 
     await session.commitTransaction();
@@ -249,6 +293,7 @@ export const PostServices = {
   createPostIntoB,
   getAllPostFromDB,
   getAllPostByUserFromDB,
+  getSinglePostFromDB,
   updatePostIntoDB,
   deletePostFromDB,
   upvotePostIntoDB,

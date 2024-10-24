@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import catchAsync from '../utils/catchAsync';
 import AppError from '../errors/AppError';
 import config from '../config';
 import { UserModel } from '../modules/users/users.model';
+import { verifyToken } from '../utils/verifyJWT';
 
 type TUserRole = 'admin' | 'user';
 
@@ -15,32 +16,32 @@ const auth = (...requiredRoles: TUserRole[]) => {
     // chucking a token sent from the client or not
     if (!token) {
       throw new AppError(
-        httpStatus.UNAUTHORIZED,
+        httpStatus.FORBIDDEN,
         'You are not an authorized user!',
       );
     }
     // chucking a token is valid or not
     if (token && !token.startsWith('Bearer ')) {
       throw new AppError(
-        httpStatus.UNAUTHORIZED,
+        httpStatus.FORBIDDEN,
         'You are not an authorized user!',
       );
     }
-
     // decode the token
     if (token && token.startsWith('Bearer ')) {
       const jwtToken = token.split(' ')[1];
 
-      const decoded = jwt.verify(
+      const decoded = verifyToken(
         jwtToken,
-        config.jwt_access_secret as string,
+        config.jwt_access_secret as string
       ) as JwtPayload;
+
       const { role, userEmail } = decoded;
 
       // checking the token is valid or not
       if (requiredRoles && !requiredRoles.includes(role)) {
         throw new AppError(
-          httpStatus.UNAUTHORIZED,
+          httpStatus.FORBIDDEN,
           'You have no access to this route!',
         );
       }

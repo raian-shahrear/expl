@@ -12,7 +12,7 @@ const createCommentIntoB = async (
 ) => {
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized user!');
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
   const isPostExist = await PostModel.findById(payload?.post);
   if (!isPostExist) {
@@ -26,7 +26,9 @@ const createCommentIntoB = async (
 
 // get all comments by post
 const getAllCommentsFromDB = async (postId: string) => {
-  const result = await CommentModel.find({ post: postId });
+  const result = await CommentModel.find({ post: postId })
+    .populate('post')
+    .populate('user');
   return result;
 };
 

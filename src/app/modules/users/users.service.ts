@@ -64,11 +64,8 @@ const loginUser = async (payload: TLoginUser) => {
     config.jwt_refresh_expire_in as string,
   );
 
-  //   const loggedInUser = await UserModel.findOne({ email: payload.email });
-
   return {
     token: { accessToken, refreshToken },
-    // data: loggedInUser,
   };
 };
 
@@ -174,15 +171,16 @@ const refreshToken = async (token: string) => {
   // chucking a token sent from the client or not
   if (!token) {
     throw new AppError(
-      httpStatus.UNAUTHORIZED,
+      httpStatus.FORBIDDEN,
       'You are not an authorized user!',
     );
   }
 
   const decoded = jwt.verify(
     token,
-    config.jwt_refresh_secret as string,
+    config.jwt_refresh_secret as string
   ) as JwtPayload;
+
   const { userEmail, iat } = decoded;
 
   // checking user is exist or not by userId
@@ -196,7 +194,7 @@ const refreshToken = async (token: string) => {
       new Date(existedUser?.passwordChangedAt).getTime() / 1000;
     if (passwordChangedAt > iat) {
       throw new AppError(
-        httpStatus.FORBIDDEN,
+        httpStatus.UNAUTHORIZED,
         'You are unauthorized! Please login again!',
       );
     }
@@ -211,7 +209,9 @@ const refreshToken = async (token: string) => {
     userProfile: existedUser.profile,
     userPhone: existedUser.phone,
     userAddress: existedUser.address,
-    needPassChange: existedUser.needPassChange,
+    following: existedUser.following,
+    follower: existedUser.follower,
+    isVerified: existedUser.isVerified,
   };
   const accessToken = crateToken(
     jwtPayload,
@@ -229,6 +229,7 @@ const followUserIntoDB = async (
     followingUserId: string;
   },
 ) => {
+
   // is user exist
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {

@@ -13,7 +13,7 @@ router.post(
   validateRequest(CommentValidation.createCommentValidationSchema),
   CommentControllers.createComment,
 );
-router.get('/:postId', auth('admin','user'), CommentControllers.getAllComments);
+router.get('/:postId', CommentControllers.getAllComments);
 router.patch(
   '/:id',
   auth('user'),

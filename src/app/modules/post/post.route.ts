@@ -12,8 +12,13 @@ router.post(
   validateRequest(PostValidation.createPostValidationSchema),
   PostControllers.createPost,
 );
-router.get('/', auth('admin','user'), PostControllers.getAllPost);
-router.get('/:userId', auth('admin','user'), PostControllers.getAllPostByUser);
+router.get('/', PostControllers.getAllPost);
+router.get('/:id', PostControllers.getSinglePost);
+router.get(
+  '/byUser/:userId',
+  auth('admin', 'user'),
+  PostControllers.getAllPostByUser,
+);
 router.patch(
   '/:id',
   auth('user'),

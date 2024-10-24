@@ -12,7 +12,7 @@ router.post(
   validateRequest(CategoryValidations.createCategoryValidationSchema),
   CategoryControllers.createCategory,
 );
-router.get('/', auth('admin', 'user'), CategoryControllers.getAllCategories);
+router.get('/', CategoryControllers.getAllCategories);
 router.patch(
   '/:id',
   auth('admin'),
