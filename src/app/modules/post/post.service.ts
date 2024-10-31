@@ -67,7 +67,9 @@ const getAllPostByUserFromDB = async (
 
 // get single post
 const getSinglePostFromDB = async (id: string) => {
-  const result = await PostModel.findById(id);
+  const result = await PostModel.findById(id)
+    .populate({ path: 'category' })
+    .populate({ path: 'author' });
   return result;
 };
 

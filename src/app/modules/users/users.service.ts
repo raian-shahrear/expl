@@ -124,6 +124,15 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
+// get all users name
+const getAllUsersNameFromDB = async () => {
+  const result = await UserModel.find()
+    .select('_id')
+    .select('name')
+    .select('role');
+  return result;
+};
+
 // change password
 const changePasswordIntoDB = async (
   user: Record<string, unknown>,
@@ -170,15 +179,12 @@ const changePasswordIntoDB = async (
 const refreshToken = async (token: string) => {
   // chucking a token sent from the client or not
   if (!token) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      'You are not an authorized user!',
-    );
+    throw new AppError(httpStatus.FORBIDDEN, 'You are not an authorized user!');
   }
 
   const decoded = jwt.verify(
     token,
-    config.jwt_refresh_secret as string
+    config.jwt_refresh_secret as string,
   ) as JwtPayload;
 
   const { userEmail, iat } = decoded;
@@ -229,7 +235,6 @@ const followUserIntoDB = async (
     followingUserId: string;
   },
 ) => {
-
   // is user exist
   const loggedInUser = await UserModel.findOne({ email: user.userEmail });
   if (!loggedInUser) {
@@ -349,6 +354,7 @@ export const UserServices = {
   updateUserRoleIntoDB,
   loginUser,
   getAllUsersFromDB,
+  getAllUsersNameFromDB,
   changePasswordIntoDB,
   refreshToken,
   followUserIntoDB,

@@ -35,7 +35,7 @@ const loginUser = catchAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: 'User logged in successfully!',
-    data: {accessToken, refreshToken},
+    data: { accessToken, refreshToken },
   });
 });
 
@@ -83,6 +83,19 @@ const getAllUsers = catchAsync(async (req, res) => {
       data: result?.result,
       meta: result?.meta,
     });
+});
+
+// get all users name
+const getAllUsersName = catchAsync(async (req, res) => {
+  const result = await UserServices.getAllUsersNameFromDB();
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User name retrieved successfully!',
+    data: result,
+  });
 });
 
 // change password
@@ -143,8 +156,9 @@ export const UserControllers = {
   updateUserRole,
   loginUser,
   getAllUsers,
+  getAllUsersName,
   changePassword,
   refreshToken,
   followUser,
-  unfollowUser
+  unfollowUser,
 };

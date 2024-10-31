@@ -1,8 +1,8 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export type TFollowing = {
-    user: Types.ObjectId;
-}
+  user: Types.ObjectId;
+};
 
 export type TUser = {
   name: string;

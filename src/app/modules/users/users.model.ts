@@ -5,13 +5,16 @@ import { TFollowing, TUser } from './users.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
-const followingSchema = new Schema<TFollowing>({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+const followingSchema = new Schema<TFollowing>(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
-}, {_id: false});
+  { _id: false },
+);
 
 const userSchema = new Schema<TUser>(
   {

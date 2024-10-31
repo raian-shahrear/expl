@@ -29,6 +29,7 @@ router.patch(
   UserControllers.updateUserRole,
 );
 router.get('/users', auth('admin', 'user'), UserControllers.getAllUsers);
+router.get('/users-name', UserControllers.getAllUsersName);
 router.post(
   '/change-password',
   auth('admin', 'user'),

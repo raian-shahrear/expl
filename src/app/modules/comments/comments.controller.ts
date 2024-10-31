@@ -35,7 +35,11 @@ const getAllComments = catchAsync(async (req, res) => {
 // update comment
 const updateComment = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await CommentServices.updateCommentIntoDB(id, req.body, req.user);
+  const result = await CommentServices.updateCommentIntoDB(
+    id,
+    req.body,
+    req.user,
+  );
 
   // send response
   sendResponse(res, {
