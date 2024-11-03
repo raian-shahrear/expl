@@ -22,6 +22,13 @@ router.patch(
   validateRequest(UserValidation.updateUserValidationSchema),
   UserControllers.updateUser,
 );
+
+router.patch(
+  '/user-email/:id',
+  auth('admin', 'user'),
+  validateRequest(UserValidation.updateUserEmailValidationSchema),
+  UserControllers.updateUserEmail,
+);
 router.patch(
   '/user-role/:id',
   auth('admin'),
@@ -52,6 +59,12 @@ router.patch(
   auth('user'),
   validateRequest(UserValidation.updateFollowValidationSchema),
   UserControllers.unfollowUser,
+);
+
+router.patch(
+  '/user-verify',
+  auth('user'),
+  UserControllers.verifyUser,
 );
 
 export const UserRoutes = router;

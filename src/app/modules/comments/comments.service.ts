@@ -4,6 +4,7 @@ import { UserModel } from '../users/users.model';
 import { TComment } from './comments.interface';
 import { CommentModel } from './comments.model';
 import { PostModel } from '../post/post.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 // create a comment
 const createCommentIntoB = async (
@@ -25,11 +26,23 @@ const createCommentIntoB = async (
 };
 
 // get all comments by post
-const getAllCommentsFromDB = async (postId: string) => {
-  const result = await CommentModel.find({ post: postId })
-    .populate('post')
-    .populate('user');
-  return result;
+const getAllCommentsFromDB = async (
+  postId: string,
+  query: Record<string, unknown>,
+) => {
+  const getQuery = new QueryBuilder(
+    CommentModel.find({ post: postId }).populate('post').populate('user'),
+    query,
+  )
+    .sort()
+    .paginate();
+  const result = await getQuery.queryModel;
+  const meta = await getQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 // update comment
@@ -54,17 +67,10 @@ const updateCommentIntoDB = async (
 };
 
 // delete comment
-const deleteCommentFromDB = async (
-  id: string,
-  user: Record<string, unknown>,
-) => {
+const deleteCommentFromDB = async (id: string) => {
   const isCommentExist = await CommentModel.findById(id);
   if (!isCommentExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This comment is not found!');
-  }
-  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
-  if (loggedInUser?._id.toString() !== isCommentExist?.user.toString()) {
-    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
 
   const result = await CommentModel.findByIdAndDelete(id);

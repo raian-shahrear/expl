@@ -9,6 +9,7 @@ const createCategoryValidationSchema = z.object({
 const updateCategoryValidationSchema = z.object({
   body: z.object({
     title: z.string().optional(),
+    isDisabled: z.boolean().optional(),
   }),
 });
 

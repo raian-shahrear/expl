@@ -17,16 +17,19 @@ const createCategory = catchAsync(async (req, res) => {
 
 // get all category
 const getAllCategories = catchAsync(async (req, res) => {
-  const result = await CategoryServices.getAllCategoriesFromDB();
+  const result = await CategoryServices.getAllCategoriesFromDB(req.query);
   // send response
-  sendResponse(res, {
-    success: result.length ? true : false,
-    statusCode: result.length ? httpStatus.OK : httpStatus.NOT_FOUND,
-    message: result.length
-      ? 'Categories are retrieved successfully!'
-      : 'No Data Found!',
-    data: result,
-  });
+  res
+    .status(result?.result?.length ? httpStatus.OK : httpStatus.NOT_FOUND)
+    .json({
+      success: result?.result?.length ? true : false,
+      statusCode: result?.result?.length ? httpStatus.OK : httpStatus.NOT_FOUND,
+      message: result?.result?.length
+        ? 'Categories are retrieved successfully!'
+        : 'No Data Found!',
+      data: result?.result,
+      meta: result?.meta,
+    });
 });
 
 // update a category

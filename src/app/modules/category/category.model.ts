@@ -8,6 +8,10 @@ const categorySchema = new Schema<TCategory>(
       required: true,
       unique: true,
     },
+    isDisabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

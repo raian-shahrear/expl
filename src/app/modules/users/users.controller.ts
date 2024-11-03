@@ -53,6 +53,20 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
+// update user email
+const updateUserEmail = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await UserServices.updateUserEmailIntoDB(id, req.body);
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User email is updated successfully!',
+    data: result,
+  });
+});
+
 // update user role
 const updateUserRole = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -150,6 +164,19 @@ const unfollowUser = catchAsync(async (req, res) => {
   });
 });
 
+// verify User
+const verifyUser = catchAsync(async (req, res) => {
+  const result = await UserServices.verifyUserIntoDB(req.user);
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Request accepted, proceed to payment!',
+    data: result,
+  });
+});
+
 export const UserControllers = {
   registerUser,
   updateUser,
@@ -161,4 +188,6 @@ export const UserControllers = {
   refreshToken,
   followUser,
   unfollowUser,
+  updateUserEmail,
+  verifyUser,
 };

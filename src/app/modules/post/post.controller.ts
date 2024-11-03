@@ -84,7 +84,7 @@ const updatePost = catchAsync(async (req, res) => {
 // delete post
 const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await PostServices.deletePostFromDB(id, req.user);
+  const result = await PostServices.deletePostFromDB(id);
 
   // send response
   sendResponse(res, {

@@ -95,15 +95,12 @@ const updatePostIntoDB = async (
 };
 
 // delete post
-const deletePostFromDB = async (id: string, user: Record<string, unknown>) => {
+const deletePostFromDB = async (id: string) => {
   const isPostExist = await PostModel.findById(id);
   if (!isPostExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This post is not found!');
   }
-  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
-  if (loggedInUser?._id.toString() !== isPostExist?.author.toString()) {
-    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
-  }
+  
   // create a session
   const session = await mongoose.startSession();
   try {

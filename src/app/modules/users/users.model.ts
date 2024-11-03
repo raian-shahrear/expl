@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 
 import { model, Schema } from 'mongoose';
-import { TFollowing, TUser } from './users.interface';
+import { TFollowing, TPaymentStatus, TUser } from './users.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
@@ -11,6 +11,28 @@ const followingSchema = new Schema<TFollowing>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+  },
+  { _id: false },
+);
+
+const paymentStatusSchema = new Schema<TPaymentStatus>(
+  {
+    price: {
+      type: Number,
+      required: true,
+    },
+    transactionId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    paidAt: {
+      type: Date,
     },
   },
   { _id: false },
@@ -63,6 +85,9 @@ const userSchema = new Schema<TUser>(
     follower: {
       type: [followingSchema],
       default: [],
+    },
+    paymentStatus: {
+      type: paymentStatusSchema,
     },
     needPassChange: {
       type: Boolean,

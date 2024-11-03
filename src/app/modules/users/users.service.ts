@@ -8,6 +8,7 @@ import config from '../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import { initialPayment } from '../payment/payment.utils';
 
 // register user
 const registerUserIntoDB = async (payload: TUser) => {
@@ -87,6 +88,12 @@ const updateUserIntoDB = async (
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not exist!');
   }
 
+  const result = await UserModel.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+// update user email
+const updateUserEmailIntoDB = async (id: string, payload: Partial<TUser>) => {
   const result = await UserModel.findByIdAndUpdate(id, payload, { new: true });
   return result;
 };
@@ -348,6 +355,47 @@ const unfollowUserIntoDB = async (
   }
 };
 
+// verify User
+const verifyUserIntoDB = async (user: Record<string, unknown>) => {
+  // checking logged in user
+  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
+  if (!loggedInUser) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
+  }
+  if (loggedInUser?.isVerified !== "pending") {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User can not be verified!');
+  }
+
+  const TX_ID = `TXID-${Math.random().toString(16).slice(2)}`;
+  const result = await UserModel.findByIdAndUpdate(
+    loggedInUser!._id,
+    {
+      paymentStatus: {
+        price: 100,
+        transactionId: TX_ID,
+      },
+    },
+    { new: true },
+  );
+
+  if (result) {
+    const paymentInfo = {
+      transactionId: TX_ID,
+      price: result.paymentStatus!.price,
+      customerName: result.name,
+      customerEmail: result.email,
+      customerAddress: result.address,
+      customerPhone: result.phone,
+    };
+    const paymentSession = await initialPayment(paymentInfo);
+
+    return {
+      result,
+      paymentSession,
+    };
+  }
+};
+
 export const UserServices = {
   registerUserIntoDB,
   updateUserIntoDB,
@@ -359,4 +407,6 @@ export const UserServices = {
   refreshToken,
   followUserIntoDB,
   unfollowUserIntoDB,
+  updateUserEmailIntoDB,
+  verifyUserIntoDB,
 };

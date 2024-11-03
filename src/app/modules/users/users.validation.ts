@@ -29,6 +29,12 @@ const updateFollowValidationSchema = z.object({
   }),
 });
 
+const updateUserEmailValidationSchema = z.object({
+  body: z.object({
+    email: z.string().email().optional(),
+  }),
+});
+
 const updateUserRoleValidationSchema = z.object({
   body: z.object({
     role: z.string().optional(),
@@ -63,4 +69,5 @@ export const UserValidation = {
   changePasswordValidationSchema,
   refreshTokenValidationSchema,
   updateFollowValidationSchema,
+  updateUserEmailValidationSchema,
 };

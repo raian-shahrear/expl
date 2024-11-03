@@ -19,17 +19,20 @@ const createComment = catchAsync(async (req, res) => {
 // get all comments by post
 const getAllComments = catchAsync(async (req, res) => {
   const { postId } = req.params;
-  const result = await CommentServices.getAllCommentsFromDB(postId);
+  const result = await CommentServices.getAllCommentsFromDB(postId, req.query);
 
   // send response
-  sendResponse(res, {
-    success: result.length ? true : false,
-    statusCode: result.length ? httpStatus.OK : httpStatus.NOT_FOUND,
-    message: result.length
-      ? 'Comments are retrieved successfully!'
-      : 'No Data Found!',
-    data: result,
-  });
+  res
+    .status(result?.result?.length ? httpStatus.OK : httpStatus.NOT_FOUND)
+    .json({
+      success: result?.result?.length ? true : false,
+      statusCode: result?.result?.length ? httpStatus.OK : httpStatus.NOT_FOUND,
+      message: result?.result?.length
+        ? 'Comments are retrieved successfully!'
+        : 'No Data Found!',
+      data: result?.result,
+      meta: result?.meta,
+    });
 });
 
 // update comment
@@ -53,7 +56,7 @@ const updateComment = catchAsync(async (req, res) => {
 // delete comment
 const deleteComment = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await CommentServices.deleteCommentFromDB(id, req.user);
+  const result = await CommentServices.deleteCommentFromDB(id);
 
   // send response
   sendResponse(res, {

@@ -4,6 +4,13 @@ export type TFollowing = {
   user: Types.ObjectId;
 };
 
+export type TPaymentStatus = {
+  price: number;
+  transactionId: string;
+  isPaid?: boolean;
+  paidAt?: Date;
+};
+
 export type TUser = {
   name: string;
   email: string;
@@ -15,6 +22,7 @@ export type TUser = {
   isVerified?: 'no' | 'pending' | 'verified';
   following?: TFollowing[];
   follower?: TFollowing[];
+  paymentStatus?: TPaymentStatus;
   needPassChange?: boolean;
   passwordChangedAt?: Date;
 };
