@@ -73,7 +73,6 @@ https://exploring-world-server.vercel.app
 ##### Admin:
 - email: admin@example.com
 - password: password@1234
-
 ##### Demo User:
 - email: jhon24@example.com
 - password: password@1234
