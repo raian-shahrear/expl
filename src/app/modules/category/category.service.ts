@@ -12,10 +12,7 @@ const createCategoryIntoDB = async (payload: TCategory) => {
 
 // get all category
 const getAllCategoriesFromDB = async (query: Record<string, unknown>) => {
-  const getQuery = new QueryBuilder(
-    CategoryModel.find(),
-    query,
-  )
+  const getQuery = new QueryBuilder(CategoryModel.find(), query)
     .sort()
     .paginate();
   const result = await getQuery.queryModel;

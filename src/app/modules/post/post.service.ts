@@ -204,7 +204,7 @@ const upvotePostIntoDB = async (id: string, user: Record<string, unknown>) => {
       }
     }
 
-    if(updatePost){
+    if (updatePost) {
       updatePost = await PostModel.findByIdAndUpdate(
         id,
         { upvoteCount: updatePost?.upvote?.length },
@@ -286,7 +286,7 @@ const downvotePostIntoDB = async (
       }
     }
 
-    if(updatePost){
+    if (updatePost) {
       updatePost = await PostModel.findByIdAndUpdate(
         id,
         { upvoteCount: updatePost?.upvote?.length },

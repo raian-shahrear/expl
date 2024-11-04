@@ -61,10 +61,6 @@ router.patch(
   UserControllers.unfollowUser,
 );
 
-router.patch(
-  '/user-verify',
-  auth('user'),
-  UserControllers.verifyUser,
-);
+router.patch('/user-verify', auth('user'), UserControllers.verifyUser);
 
 export const UserRoutes = router;

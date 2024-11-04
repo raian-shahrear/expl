@@ -362,7 +362,7 @@ const verifyUserIntoDB = async (user: Record<string, unknown>) => {
   if (!loggedInUser) {
     throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
   }
-  if (loggedInUser?.isVerified !== "pending") {
+  if (loggedInUser?.isVerified !== 'pending') {
     throw new AppError(httpStatus.BAD_REQUEST, 'User can not be verified!');
   }
 
