@@ -30,6 +30,10 @@ const postSchema = new Schema<TPost>(
       ref: 'User',
       default: [],
     },
+    upvoteCount: {
+      type: Number,
+      default: 0,
+    },
     downvote: {
       type: [Schema.Types.ObjectId],
       ref: 'User',

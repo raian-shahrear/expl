@@ -7,6 +7,7 @@ export type TPost = {
   author: Types.ObjectId;
   travelStory: string;
   upvote?: Types.ObjectId[];
+  upvoteCount?: number;
   downvote?: Types.ObjectId[];
   premium?: {
     travelGuide?: string;

@@ -100,7 +100,7 @@ const deletePostFromDB = async (id: string) => {
   if (!isPostExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'This post is not found!');
   }
-  
+
   // create a session
   const session = await mongoose.startSession();
   try {
@@ -204,6 +204,14 @@ const upvotePostIntoDB = async (id: string, user: Record<string, unknown>) => {
       }
     }
 
+    if(updatePost){
+      updatePost = await PostModel.findByIdAndUpdate(
+        id,
+        { upvoteCount: updatePost?.upvote?.length },
+        { new: true, session },
+      );
+    }
+
     await session.commitTransaction();
     await session.endSession();
     return updatePost;
@@ -276,6 +284,14 @@ const downvotePostIntoDB = async (
           { new: true, session },
         );
       }
+    }
+
+    if(updatePost){
+      updatePost = await PostModel.findByIdAndUpdate(
+        id,
+        { upvoteCount: updatePost?.upvote?.length },
+        { new: true, session },
+      );
     }
 
     await session.commitTransaction();
