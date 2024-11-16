@@ -40,7 +40,10 @@ router.patch(
     const data = JSON.parse(req?.body?.data);
     req.body = {
       ...data,
-      image: [...data.image, ...(files?.images?.map((file: any) => file?.path) || [])],
+      image: [
+        ...data.image,
+        ...(files?.images?.map((file: any) => file?.path) || []),
+      ],
     };
     next();
   },
