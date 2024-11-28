@@ -53,6 +53,24 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
+// update user's cover
+const updateUserCover = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await UserServices.updateUserCoverIntoDB(
+    id,
+    req.user,
+    req.body,
+  );
+
+  // send response
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User's cover is updated successfully!",
+    data: result,
+  });
+});
+
 // update user email
 const updateUserEmail = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -190,4 +208,5 @@ export const UserControllers = {
   unfollowUser,
   updateUserEmail,
   verifyUser,
+  updateUserCover,
 };

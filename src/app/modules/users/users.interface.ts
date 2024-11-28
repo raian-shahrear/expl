@@ -19,6 +19,7 @@ export type TUser = {
   role: 'admin' | 'user';
   address: string;
   profile: string;
+  cover?: string;
   isVerified?: 'no' | 'pending' | 'verified';
   following?: TFollowing[];
   follower?: TFollowing[];

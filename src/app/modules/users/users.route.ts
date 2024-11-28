@@ -43,6 +43,20 @@ router.patch(
 );
 
 router.patch(
+  '/users-cover/:id',
+  auth('admin', 'user'),
+  multerUpload.single('image'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = {
+      cover: req?.file?.path,
+    };
+    next();
+  },
+  validateRequest(UserValidation.updateProfileCoverValidationSchema),
+  UserControllers.updateUserCover,
+);
+
+router.patch(
   '/user-email/:id',
   auth('admin', 'user'),
   validateRequest(UserValidation.updateUserEmailValidationSchema),

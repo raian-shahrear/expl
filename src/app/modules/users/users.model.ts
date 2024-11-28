@@ -73,6 +73,9 @@ const userSchema = new Schema<TUser>(
       type: String,
       required: true,
     },
+    cover: {
+      type: String,
+    },
     isVerified: {
       type: String,
       enum: ['no', 'pending', 'verified'],

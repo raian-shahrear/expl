@@ -19,7 +19,14 @@ const updateUserValidationSchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     profile: z.string().optional(),
+    cover: z.string().optional(),
     isVerified: z.string().optional(),
+  }),
+});
+
+const updateProfileCoverValidationSchema = z.object({
+  body: z.object({
+    cover: z.string().optional(),
   }),
 });
 
@@ -70,4 +77,5 @@ export const UserValidation = {
   refreshTokenValidationSchema,
   updateFollowValidationSchema,
   updateUserEmailValidationSchema,
+  updateProfileCoverValidationSchema
 };

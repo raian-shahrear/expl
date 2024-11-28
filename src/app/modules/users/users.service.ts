@@ -92,6 +92,27 @@ const updateUserIntoDB = async (
   return result;
 };
 
+// update user's cover
+const updateUserCoverIntoDB = async (
+  id: string,
+  user: Record<string, unknown>,
+  payload: Partial<TUser>,
+) => {
+  // checking logged in user
+  const loggedInUser = await UserModel.findOne({ email: user.userEmail });
+  if (loggedInUser?._id.toString() !== id) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Unauthorized user!');
+  }
+  // checking the id exist or not
+  const isUserExist = await UserModel.findById(id);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'This user is not exist!');
+  }
+
+  const result = await UserModel.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
 // update user email
 const updateUserEmailIntoDB = async (id: string, payload: Partial<TUser>) => {
   const result = await UserModel.findByIdAndUpdate(id, payload, { new: true });
@@ -409,4 +430,5 @@ export const UserServices = {
   unfollowUserIntoDB,
   updateUserEmailIntoDB,
   verifyUserIntoDB,
+  updateUserCoverIntoDB,
 };
