@@ -27,7 +27,7 @@ const getAllPost = catchAsync(async (req, res) => {
       success: result?.result?.length ? true : false,
       statusCode: result?.result?.length ? httpStatus.OK : httpStatus.NOT_FOUND,
       message: result?.result?.length
-        ? 'Post are retrieved successfully!'
+        ? 'Posts are retrieved successfully!'
         : 'No Data Found!',
       data: result?.result,
       meta: result?.meta,

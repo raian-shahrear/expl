@@ -77,5 +77,5 @@ export const UserValidation = {
   refreshTokenValidationSchema,
   updateFollowValidationSchema,
   updateUserEmailValidationSchema,
-  updateProfileCoverValidationSchema
+  updateProfileCoverValidationSchema,
 };
